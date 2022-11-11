@@ -12,6 +12,11 @@ public class GameManager : MonoBehaviour
         Instance = this;
     }
 
+    private void Start()
+    {
+        changeState(GameStates.Menu);
+    }
+
     public enum GameStates
     {
         Menu,
@@ -19,7 +24,8 @@ public class GameManager : MonoBehaviour
         Draw,
         MatchSet,
         SetUp,
-        MatchDecided
+        MatchDecided,
+        ResultsScreen,
     }
 
     public void changeState(GameStates newState)

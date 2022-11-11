@@ -11,6 +11,7 @@ public class UIIndicators : MonoBehaviour
  
     public Text countUpText;
     public GameObject indicator;
+    public Image blackAndWhite;
     public float indicatorDisplayTime;
 
     public float introScreenDisplayTime;
@@ -19,11 +20,10 @@ public class UIIndicators : MonoBehaviour
 
     public Image[] introImageArray;
 
-
-
     public int minimumTimeToStart;
     public int maximumTimeToStart;
     public Text winOrLose;
+  
 
     private float countdown;
     private float countUp = 0;
@@ -31,7 +31,14 @@ public class UIIndicators : MonoBehaviour
 
     private PlayerScript player;
     private RivalScript rival;
-   
+
+    public delegate void MenuFadeInEvent();
+    public static event MenuFadeInEvent menuFadeInEvent;
+
+
+    public delegate void MenuFadeOutEvent();
+    public static event MenuFadeOutEvent menuFadeOutEvent;
+
     private void OnEnable()
     {
         InputManager.onInputEvent += CheckInput;
@@ -48,13 +55,9 @@ public class UIIndicators : MonoBehaviour
     }
     void Start()
     {
-  
- 
-    
         player = FindObjectOfType<PlayerScript>();
         rival = FindObjectOfType<RivalScript>();
-
-        StartBattle();
+       
     }
 
     public void CheckInput(string action)
@@ -74,8 +77,8 @@ public class UIIndicators : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-
-        if (GameManager.Instance.currentState == GameManager.GameStates.SetUp) StartCoroutine(IntroScreen());
+        Debug.Log(GameManager.Instance.currentState);
+        if (GameManager.Instance.currentState == GameManager.GameStates.SetUp) StartBattle();  
 
         if (GameManager.Instance.currentState == GameManager.GameStates.Waiting)
         {
@@ -125,6 +128,11 @@ public class UIIndicators : MonoBehaviour
             winOrLose.gameObject.SetActive(true);
         }
 
+        if (GameManager.Instance.currentState == GameManager.GameStates.ResultsScreen)
+        {
+            if (menuFadeOutEvent != null) menuFadeOutEvent();
+        }
+
     }
 
     IEnumerator RemoveIndicator()
@@ -135,11 +143,19 @@ public class UIIndicators : MonoBehaviour
 
     IEnumerator IntroScreen()
     {
-   
+        if (menuFadeInEvent != null) menuFadeInEvent();
         yield return new WaitForSeconds(introScreenDisplayTime);
+        float t = introScreenDisplayTime + 2;
+        while (t > 0) {
+            t -= Time.deltaTime;
+        }
+
+        if (t <= 0)
+        {
+            GameManager.Instance.changeState(GameManager.GameStates.Waiting);
+        }
+      
      
-     
-        GameManager.Instance.changeState(GameManager.GameStates.Waiting);
     }
     public float TimeRegistered(float attackTime)
     {
@@ -150,7 +166,7 @@ public class UIIndicators : MonoBehaviour
 
     public void StartBattle()
     {
-        GameManager.Instance.changeState(GameManager.GameStates.SetUp);
+        
         LevelMusic.instance.playTrack1();
         countdown = Random.Range(minimumTimeToStart, maximumTimeToStart);
         countUp = 0;
@@ -158,7 +174,7 @@ public class UIIndicators : MonoBehaviour
         timerIsRunning = true;
         indicator.SetActive(false);
         winOrLose.gameObject.SetActive(false);
-
+        StartCoroutine(IntroScreen());
 
     }
 }

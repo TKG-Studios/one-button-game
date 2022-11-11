@@ -32,8 +32,6 @@ namespace SimpleAudioManager
                 {
                     trackList[0].Stop();
                     trackList[0].Play();
-                    
-               
                 }
 
             }

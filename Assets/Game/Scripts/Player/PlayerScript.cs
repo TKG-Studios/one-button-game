@@ -52,6 +52,7 @@ public class PlayerScript : MonoBehaviour
         if (action == "Up") Debug.Log("Up");
         if (action == "Down") Debug.Log("Down");
 
+        if (GameManager.Instance.currentState == GameManager.GameStates.Menu) GameManager.Instance.changeState(GameManager.GameStates.SetUp);
 
         if (GameManager.Instance.currentState == GameManager.GameStates.Draw)
         {
@@ -108,21 +109,28 @@ public class PlayerScript : MonoBehaviour
             {
                 if (didPLayerWin)
                 {
-                    if (NextRival != null) NextRival();
-                    rivalAttackSpeed = rival.randomNumber(attackTime);
-                    int currentRival = 0;
-                    if (currentRival < rival.rivals.Count - 1)
+                    if (playerVictories != rival.rivals.Count)
                     {
-                        rival.rivals[currentRival].SetActive(false);
-                        currentRival++;
-                        rival.rivals[currentRival].SetActive(true);
-                    }
+                        if (NextRival != null) NextRival();
+                        rivalAttackSpeed = rival.randomNumber(attackTime);
+                        int currentRival = 0;
+                        GameManager.Instance.changeState(GameManager.GameStates.SetUp);
+                        if (currentRival < rival.rivals.Count - 1)
+                        {
+                            rival.rivals[currentRival].SetActive(false);
+                            currentRival++;
+                            rival.rivals[currentRival].SetActive(true);
+                        }
+                    } else if (playerVictories == rival.rivals.Count)
+                    {
+                        GameManager.Instance.changeState(GameManager.GameStates.ResultsScreen);
 
+                    }
                     gameObject.transform.position = playerInitPosition;
-                    GameManager.Instance.changeState(GameManager.GameStates.SetUp);
+                 
                 } else if (!didPLayerWin)
                 {
-                    SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+                    GameManager.Instance.changeState(GameManager.GameStates.ResultsScreen);
                 }
 
             }
@@ -141,7 +149,6 @@ public class PlayerScript : MonoBehaviour
     IEnumerator RivalDeath()
     {
         yield return new WaitForSeconds(1f);
-
     }
 
 }

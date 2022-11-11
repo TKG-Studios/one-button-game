@@ -22,9 +22,12 @@ namespace SimpleAudioManager {
         private void Awake()
         {
             instance = this;
+            
+        }
+        private void Start()
+        {
             DontDestroyOnLoad(this);
         }
-
         //Game Sound Functions Here
 
         public void playGameSound0()
