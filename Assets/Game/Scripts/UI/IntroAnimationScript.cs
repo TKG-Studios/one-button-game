@@ -8,18 +8,17 @@ public class IntroAnimationScript : MonoBehaviour
     private void OnEnable()
     {
         PlayerScript.NextRival += Animate;
+        PlayerScript.FirstEnemy += Animate;
     }
 
 
     private void OnDisable()
     {
         PlayerScript.NextRival -= Animate;
+        PlayerScript.FirstEnemy -= Animate;
     }
 
-    private void Start()
-    {
-        Animate();
-    }
+  
 
     public void Animate()
     {

@@ -14,6 +14,9 @@ public class PlayerScript : MonoBehaviour
     public delegate void NextRivalEventHandler();
     public static event NextRivalEventHandler NextRival;
 
+    public delegate void FirstEnemyEvent();
+    public static event FirstEnemyEvent FirstEnemy;
+
     internal int playerVictories;
 
     public Transform playerWinPosition;
@@ -52,7 +55,13 @@ public class PlayerScript : MonoBehaviour
         if (action == "Up") Debug.Log("Up");
         if (action == "Down") Debug.Log("Down");
 
-        if (GameManager.Instance.currentState == GameManager.GameStates.Menu) GameManager.Instance.changeState(GameManager.GameStates.SetUp);
+        if (GameManager.Instance.currentState == GameManager.GameStates.Menu)
+        {
+            if (FirstEnemy != null) FirstEnemy();
+            GameManager.Instance.changeState(GameManager.GameStates.SetUp);
+        }
+            
+           
 
         if (GameManager.Instance.currentState == GameManager.GameStates.Draw)
         {
